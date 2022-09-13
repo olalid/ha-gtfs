@@ -1,7 +1,7 @@
 {
-    "domain": "trafiklab_test",
-    "name": "Trafiklab GTFS",
-    "documentation": "https://github.com/olalid/ha-trafiklab",
+    "domain": "ha-gtfs",
+    "name": "HA GTFS",
+    "documentation": "https://github.com/olalid/ha-gtfs",
     "dependencies": [],
     "codeowners": ["@olalid"],
     "version": "0.1.0",
