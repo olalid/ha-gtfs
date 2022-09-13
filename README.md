@@ -7,9 +7,11 @@ Download the repository and extract the custom_components/ha-gtfs folder in your
 
 # Configuration
 
+´´´
 sensor:
   - platform: ha-gtfs
     gtfs_file: /var/opt/homeassistant/gtfs/otraf.zip
     departures:
     - name: "Next bus from Gamla Linköping (A)"
       stopid: 9022005000215001
+´´´
