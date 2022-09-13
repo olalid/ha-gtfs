@@ -2,6 +2,7 @@
     "domain": "ha-gtfs",
     "name": "HA GTFS",
     "documentation": "https://github.com/olalid/ha-gtfs",
+    "issue_tracker": "https://github.com/olalid/ha-gtfs/issues",
     "dependencies": [],
     "codeowners": ["@olalid"],
     "version": "0.1.0",
