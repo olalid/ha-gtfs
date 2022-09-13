@@ -33,7 +33,6 @@ CONF_GTFS_FILE = 'gtfs_file'
 DEFAULT_NAME = 'Next Bus'
 ICON = 'mdi:bus'
 
-#MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=120)
 TIME_STR_FORMAT = "%H:%M:%S"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -131,7 +130,6 @@ class PublicTransportData(object):
         seconds = seconds + int(sp[2])
         return seconds
         
-#    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         """ Retrive information from the GTFS file """
         gtfs = GTFS.load_zip(self._gtfs_file)
