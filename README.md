@@ -7,6 +7,8 @@ Download the repository and extract the custom_components/ha-gtfs folder in your
 
 # Configuration
 
+A GTFS zip file needs to be downloaded
+
 ```
 sensor:
   - platform: ha-gtfs
