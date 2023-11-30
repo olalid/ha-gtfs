@@ -165,7 +165,7 @@ class PublicTransportData(object):
             self._valid = False
             return
 
-        trips = gtfs.day_trips(now_d)
+        trips = gtfs.date_trips(now_d)
         stop_times = gtfs.stop_times[
             gtfs.stop_times.trip_id.isin(trips.trip_id)
             & (gtfs.stop_times.stop_id == self._stop_id)
@@ -173,7 +173,7 @@ class PublicTransportData(object):
         ]
         today_stop_times = stop_times.sort_values(by="arrival_time")
 
-        trips = gtfs.day_trips(tomorrow_d)
+        trips = gtfs.date_trips(tomorrow_d)
         stop_times = gtfs.stop_times[
             gtfs.stop_times.trip_id.isin(trips.trip_id)
             & (gtfs.stop_times.stop_id == self._stop_id)
