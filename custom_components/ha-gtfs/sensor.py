@@ -1,6 +1,6 @@
-import warnings
+# import warnings
 
-warnings.simplefilter(action="ignore", category=FutureWarning)
+# warnings.simplefilter(action="ignore", category=FutureWarning)
 import logging
 from datetime import date, datetime, timedelta
 
@@ -74,7 +74,8 @@ class PublicTransportSensor(Entity):
         self._stop = stop
         self._data = PublicTransportData(filename, stop)
         self._next_ride = None
-        self.update()
+        self._state = "-"
+        self._update()
 
     @property
     def name(self):
@@ -83,14 +84,7 @@ class PublicTransportSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        self._next_ride = self._data.get_next()
-        if self._next_ride is not None:
-            return due_in_minutes(self._next_ride["arrival_dt"])
-        else:
-            if self._data.isvalid() is True:
-                return "-"
-            else:
-                return "GTFS data invalid"
+        return self._state
 
     @property
     def extra_state_attributes(self):
@@ -101,7 +95,7 @@ class PublicTransportSensor(Entity):
 
         attrs = {
             ATTR_STOP_ID: self._stop,
-            ATTR_DUE_IN: self.state,
+            ATTR_DUE_IN: self._state,
         }
         if self._next_ride is not None:
             attrs[ATTR_STOP_NAME] = self._data.get_stop_name()
@@ -122,7 +116,19 @@ class PublicTransportSensor(Entity):
         return ICON
 
     def update(self):
-        """Get the latest data from GTFS file if needed."""
+        """Get the latest data from GTFS."""
+        self._next_ride = self._data.get_next()
+        if self._next_ride is not None:
+            self._state = due_in_minutes(self._next_ride["arrival_dt"])
+        else:
+            if self._data.isvalid() is True:
+                self._state = "-"
+            else:
+                self._state = "GTFS data invalid"
+
+    def _update(self):
+        """Force update from GTFS source."""
+        _LOGGER.debug("Entity calling update")
         self._data.update()
 
 
@@ -135,6 +141,7 @@ class PublicTransportData(object):
         self._stop_id = stop_id
         self._stop_name = ""
         self._valid = False
+        self._init_date = None
 
     def _time_to_sec(self, timestr):
         sp = timestr.split(":")
@@ -148,6 +155,7 @@ class PublicTransportData(object):
 
     def update(self):
         """Retrive information from the GTFS file"""
+        _LOGGER.debug("Loading data from GTFS source zip file")
         gtfs = GTFS.load_zip(self._gtfs_file)
 
         """ Init date and time objects """
@@ -158,7 +166,7 @@ class PublicTransportData(object):
 
         """ Check if the GTFS files is valid for todays and tomorrows date """
         if (gtfs.valid_date(now_d) and gtfs.valid_date(tomorrow_d)) is False:
-            _LOGGER.error("GTFS file is not valid for todays or tomorrows date.")
+            _LOGGER.error("GTFS data not valid for todays or tomorrows date.")
             empty = []
             self._today_stop_times = pd.DataFrame(empty)
             self._tomorrow_stop_times = pd.DataFrame(empty)
@@ -205,6 +213,12 @@ class PublicTransportData(object):
                 tomorrow_dt.replace(tzinfo=None, hour=0, minute=0, second=0) + temp_td
             )
 
+        _LOGGER.debug(
+            "Found stop name %s, with %s trips today, %s trips tomorrow",
+            stop_name,
+            today_stop_times.shape[0],
+            tomorrow_stop_times.shape[0],
+        )
         self._today_stop_times = today_stop_times
         self._tomorrow_stop_times = tomorrow_stop_times
         self._stop_name = stop_name
