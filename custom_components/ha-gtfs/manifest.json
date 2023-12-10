@@ -8,6 +8,6 @@
     "version": "0.1.1",
     "requirements": [
         "gtfs-lite>=0.2.1",
-        "pandas>=2.0.2"
+        "pandas>=2.1.2"
     ]
 }
