@@ -1,6 +1,3 @@
-# import warnings
-
-# warnings.simplefilter(action="ignore", category=FutureWarning)
 import logging
 from datetime import date, datetime, timedelta
 
@@ -180,6 +177,8 @@ class PublicTransportData(object):
             & (gtfs.stop_times.pickup_type != 2)
         ]
         today_stop_times = stop_times.sort_values(by="arrival_time")
+        today_stop_times["route_short_name"] = ""
+        today_stop_times["arrival_dt"] = pd.NaT
 
         trips = gtfs.date_trips(tomorrow_d)
         stop_times = gtfs.stop_times[
@@ -188,6 +187,8 @@ class PublicTransportData(object):
             & (gtfs.stop_times.pickup_type != 2)
         ]
         tomorrow_stop_times = stop_times.sort_values(by="arrival_time")
+        tomorrow_stop_times["route_short_name"] = ""
+        tomorrow_stop_times["arrival_dt"] = pd.NaT
 
         stop_name = gtfs.stops[gtfs.stops.stop_id == self._stop_id].iloc[0]["stop_name"]
 
